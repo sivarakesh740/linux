@@ -1,0 +1,337 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Calibri;}}
+{\*\generator Msftedit 5.41.21.2510;}\viewkind4\uc1\pard\sa200\sl276\slmult1\lang9\f0\fs22 10.Raw string literal\par
+-----------------------------\par
+In C++, to escape characters like \ldblquote\\n\rdblquote  we use an extra \ldblquote\\\rdblquote . From C++ 11, we can use raw strings in which escape characters (like \\n \\t or \\\rdblquote  ) are not processed. The syntax of raw string is that the literal starts with R\rdblquote ( and ends in )\rdblquote .\par
+Let\rquote s see an an example to see raw string literal in C++:\par
+/ C++ program to demonstrate working of raw string. \par
+#include <iostream> \par
+using namespace std; \par
+  int main() \par
+\{ \par
+    // A Normal string \par
+    string string1 = "Geeks.\\nFor.\\nGeeks.\\n" ;  \par
+  \par
+    // A Raw string \par
+    string string2 = R"(Geeks.\\nFor.\\nGeeks.\\n)";  \par
+  \par
+    cout << string1 << endl; \par
+  \par
+    cout << string2 << endl; \par
+      \par
+    return 0; \par
+\} \par
+\par
+Output\par
+----------\par
+Geeks.\par
+For.\par
+Geeks.\par
+\par
+Geeks.\\nFor.\\nGeeks.\\n\par
+\par
+\par
+11.Final\par
+---------------------\par
+Use of final specifier in C++ 11:\par
+Sometimes you don\rquote t want to allow derived class to override the base class\rquote  virtual function. C++ 11 allows built-in facility to prevent overriding of virtual function using final specifier.\par
+Consider the following example which shows use of final specifier. This program fails in compilation.\par
+\par
+\par
+#include <iostream> \par
+using namespace std; \par
+  class Base \par
+\{ \par
+public: \par
+    virtual void myfun() final \par
+    \{ \par
+        cout << "myfun() in Base"; \par
+    \} \par
+\}; \par
+class Derived : public Base \par
+\{ \par
+    void myfun() \par
+    \{ \par
+        cout << "myfun() in Derived\\n"; \par
+    \} \par
+\}; \par
+  \par
+int main() \par
+\{ \par
+    Derived d; \par
+    Base &b = d; \par
+    b.myfun(); \par
+    return 0; \par
+\}\par
+Output:\par
+----------------\par
+prog.cpp:14:10: error: virtual function \lquote virtual void Derived::myfun()\rquote\par
+     void myfun()\par
+          ^\par
+prog.cpp:7:18: error: overriding final function \lquote virtual void Base::myfun()\rquote\par
+     virtual void myfun() final  \par
+\par
+Explanation\par
+When used in a virtual function declaration or definition, final ensures that the function is virtual and specifies that it may not be overridden by derived classes. The program is ill-formed (a compile-time error is generated) otherwise.\par
+When used in a class definition, final specifies that this class may not appear in the base-specifier-list of another class definition (in other words, cannot be derived from). The program is ill-formed (a compile-time error is generated) otherwise. final can also be used with a union definition, in which case it has no effect (other than on the outcome of std::is_final), since unions cannot be derived from)\par
+final is an identifier with a special meaning when used in a member function declaration or class head. In other contexts it is not reserved and may be used to name objects and functions. \par
+--------------------------------------------\par
+12.Static assertion\par
+------------------------------\par
+The static_assert declaration tests a software assertion at compile time. This can be especially useful for template code.\par
+Syntax looks like this:\par
+static_assert ( bool_constexpr , string )\par
+Static assertions are a way to check if a condition is true when the code is compiled. If it isn\rquote t, the compiler is required to issue an error message and stop the compiling process. The condition that needs to be checked is a constant expression.\par
+Performs compile-time assertion checking\par
+/ CPP code to demonstrate \par
+// static assertion using static_assert \par
+#include <iostream> \par
+using namespace std; \par
+  template <class T, int Size> \par
+class Vector \{ \par
+    // Compile time assertion to check if \par
+    // the size of the vector is greater than \par
+    // 3 or not. If any vector is declared whose \par
+    // size is less than 4, the assertion will fail \par
+    static_assert(Size > 3, "Vector size is too small!"); \par
+    T m_values[Size]; \par
+\}; \par
+  \par
+int main() \par
+\{ \par
+    Vector<int, 4> four; // This will work \par
+    Vector<short, 2> two; // This will fail \par
+  \par
+    return 0; \par
+\}\par
+----------------------------------------------------------------------\par
+13. Deprecated binders and adaptors\par
+--------------------------------------------------\par
+Along with variadic templates have come much more flexible function binders and adaptors; as a result, several existing binders and adaptors are now deprecated. You should no longer use the functions ptr_fun, mem_fun, bind1st and bind2nd. Their functionality has been completely subsumed by the class std::function and the functions bind and mem_fn. \par
+Added in c++11\par
+-------------------\par
+std::function\par
+----------------------\par
+int sum(int a, int b) \{ return a + b; \}\par
+function<int (int, int)> fsum = &sum;\par
+fsum(4,2);\par
+--------------------------------------\par
+struct Foo \{ \par
+void f(int i)\{\} \par
+\};\par
+\par
+function<void(Foo&, int)> fmember = mem_fn(&Foo::f);\par
+Foo foo; \par
+fmember(foo, 42);\par
+-----------------------------------\par
+struct Foo \{ \par
+void f(int i)\{\} \par
+\};\par
+Foo foo;\par
+function<void(int)> fmember = bind(&Foo::f,foo, _1);\par
+fmember(42);\line\par
+-------------------------------------------------------\par
+14.Strongly-typed Enums in C++ 2011\par
+---------------------------------------------------\par
+The new standard brings a new kind of enums, introduced with 'enum class' and called strongly-typed enums. They no longer export their enumerators to the surrounding scope, can have user specified underlying type of an integral type (also added for tranditional enums) and do not convert implicitly to int.\par
+\par
+    enum class Selection\{\par
+        None,\par
+        Single,\par
+        Multiple,\par
+    \};\par
+To use it, one must use the Selection:: qualifier, because the enumerators are no longer exported to the surrounding scope (in this case the global namespace).\par
+    Selection s = Selection::Multiple;\par
+And if we add the Border enumeration, the problem with the redefinition of None would no longer happen, since the two None names are members of different types (in different scopes).\par
+    enum class Border \{\par
+        None,\par
+        Flat,\par
+        Raised,\par
+        Sunken\par
+    \};\par
+\par
+15.Range-based for loop in C++\par
+--------------------------------------------------\par
+Range-based for loop in C++ is added since C++ 11. It executes a for loop over a range. Used as a more readable equivalent to the traditional for loop operating over a range of values, such as all elements in a container.\par
+\par
+syntax:\par
+for ( range_declaration : range_expression ) \par
+    loop_statement\par
+\par
+Example:\par
+---------------\par
+\par
+// Illustration of range-for loop \par
+// using CPP code \par
+#include <iostream> \par
+#include <vector> \par
+  \par
+//Driver \par
+int main()  \par
+\{ \par
+    // Iterating over whole array \par
+    std::vector<int> v = \{0, 1, 2, 3, 4, 5\}; \par
+    for (auto i : v) \par
+        std::cout << i << ' '; \par
+      \par
+    std::cout << '\\n'; \par
+      \par
+    // the initializer may be a braced-init-list \par
+    for (int n : \{0, 1, 2, 3, 4, 5\}) \par
+        std::cout << n << ' '; \par
+      \par
+    std::cout << '\\n'; \par
+   \par
+    // Iterating over array \par
+    int a[] = \{0, 1, 2, 3, 4, 5\};      \par
+    for (int n : a) \par
+        std::cout << n << ' '; \par
+      \par
+    std::cout << '\\n'; \par
+      \par
+    // Just running a loop for every array \par
+    // element \par
+    for (int n : a)   \par
+        std::cout << "In loop" << ' '; \par
+      \par
+    std::cout << '\\n'; \par
+      \par
+    // Printing string characters \par
+    std::string str = "Geeks"; \par
+    for (char c : str)  \par
+        std::cout << c << ' '; \par
+          \par
+    std::cout << '\\n'; \par
+  \par
+    // Printing keys and values of a map \par
+    std::map <int, int> MAP(\{\{1, 1\}, \{2, 2\}, \{3, 3\}\}); \par
+    for (auto i : MAP) \par
+        std::cout << '\{' << i.first << ", " \par
+                  << i.second << "\}\\n"; \par
+\} \par
+\par
+\par
+-----------------------------------------------------------------------------------------\par
+16.override indetifier\par
+--------------------------------------------------------------------------\par
+In C++03, it is possible to accidentally create a new virtual function, when one intended to override a base class function. For example:\par
+// C++03\par
+class Base\{\par
+    virtual void f(int);\par
+\};\par
+class Derived : public Base\{\par
+    virtual void f(float);\par
+\};\par
+The intention was to override Base::f() and to use Derived::f(). But instead, because it has a different signature, it creates a second virtual function.\par
+// C++11\par
+class Base\{\par
+    virtual void f(int);\par
+\};\par
+\par
+class Derived : public Base\{\par
+    virtual void f(float) override;  // Error\par
+\};\par
+The override special identifier means that the compiler will check the base class(es) to see if there is a virtual function with this exact signature. And if there is not, the compiler will indicate an error.\par
+-------------------------------------------------------------\par
+17.unordered_* containers\par
+-----------------------------------------------------------\par
+An unordered_* container is implemented using a hash table. C++11 offers four standard ones:\par
+   unordered_map\par
+    unordered_set\par
+    unordered_multimap\par
+    unordered_multiset\par
+They would have been called hash_map etc., but there are so many incompatible uses of those names that the committee had to choose new names and the unordered_* name nicely highlighted the key difference between (say) map and unordered_map: When you iterate over a map from begin() to end(), you do so in the order provided by its key type\rquote s less-than comparison operator (by default <) whereas the value type of unordered_map is not required to have a less-than comparison operator and a hash table doesn\rquote t naturally provide an order. The are other differences; in particular, conversely, the element type of a map is not required to have a hash function.\par
+The basic idea is simply to use unordered_map as an optimized version of map where optimization is possible and reasonable. For example:\par
+\par
+        map<string,int> m \{\{"Dijkstra",1972\}, \{"Scott",1976\}, \{"Wilkes",1967\}, \{"Hamming",1968\}\};\par
+        m["Ritchie"] = 1983;\par
+        for(auto& x : m) cout << '\{' << x.first << ',' << x.second << '\}';\par
+\par
+        unordered_map<string,int> um \{\{"Dijkstra",1972\}, \{"Scott",1976\}, \{"Wilkes",1967\}, \{"Hamming",1968\}\};\par
+        um["Ritchie"] = 1983;\par
+        for(auto& x : um) cout << '\{' << x.first << ',' << x.second << '\}';\par
+\par
+The iterator over m will present the elements in alphabetical order; the iteration over um will not (except through a freak accident). Lookup is implemented very differently for m and um. For m lookup involves log2(m.size()) less-than comparisons, whereas for um lookup involves a single call of a hash function and one or more equality operations. For a few elements (say a few dozen), it is hard to tell which is faster. For larger numbers of elements (e.g. thousands), lookup in an unordered_map can be much faster than for a map.\par
+\par
+------------------------------------------------------------------------------------------------\par
+18.std::thread\par
+----------------------------------------------\par
+\par
+Multithreading support was introduced in C+11. Prior to C++11, we had to use POSIX threads or p threads library in C. While this library did the job the lack of any standard language provided feature-set caused serious portability issues. C++ 11 did away with all that and gave us std::thread. The thread classes and related functions are defined in the thread header file.\par
+\par
+std::thread is the thread class that represents a single thread in C++. To start a thread we simply need to create a new thread object and pass the executing code to be called (i.e, a callable object) into the constructor of the object. Once the object is created a new thread is launched which will execute the code specified in callable.\par
+A callable can be either of the three\par
+\par
+    A function pointer\par
+    A function object\par
+    A lambda expression \par
+\par
+After defining callable, pass it to the constructor.\par
+\par
+import<thread> \par
+std::thread thread_object(callable) \par
+\par
+Example:\par
+---------------------\par
+#include <iostream> \par
+#include <thread> \par
+using namespace std; \par
+  void foo(int Z) \{ \par
+    for (int i = 0; i < Z; i++) \{ \par
+        cout << "Thread using function"\par
+               " pointer as callable\\n"; \par
+    \} \par
+\} \par
+  \par
+// A callable object \par
+class thread_obj \{ \par
+public: \par
+    void operator()(int x) \{ \par
+        for (int i = 0; i < x; i++) \par
+            cout << "Thread using function"\par
+                  " object as  callable\\n"; \par
+    \} \par
+\}; \par
+  \par
+int main() \par
+\{ \par
+    cout << "Threads 1 and 2 and 3 "\par
+         "operating independently" << endl; \par
+  \par
+    // This thread is launched by using  \par
+    // function pointer as callable \par
+    thread th1(foo, 3); \par
+  \par
+    // This thread is launched by using \par
+    // function object as callable \par
+    thread th2(thread_obj(), 3); \par
+  \par
+    // Define a Lambda Expression \par
+    auto f = [](int x) \{ \par
+        for (int i = 0; i < x; i++) \par
+            cout << "Thread using lambda"\par
+             " expression as callable\\n"; \par
+    \}; \par
+  \par
+    // This thread is launched by using  \par
+    // lamda expression as callable \par
+    thread th3(f, 3); \par
+  \par
+    // Wait for the threads to finish \par
+    // Wait for thread t1 to finish \par
+    th1.join(); \par
+  \par
+    // Wait for thread t2 to finish \par
+    th2.join(); \par
+  \par
+    // Wait for thread t3 to finish \par
+    th3.join(); \par
+  \par
+    return 0; \par
+\} \par
+Compiation:\par
+-----------------------\par
+g++ -std=c++11 -pthread\par
+\par
+\par
+}
+ 
